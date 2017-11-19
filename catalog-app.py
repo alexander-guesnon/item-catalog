@@ -18,9 +18,54 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 output=""
-                output+="<html><body>"
-                output+="test"
-                output+="</body></html>"
+                output+="""<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"></script>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-defualt">
+      <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><h2>Catalog App</h2></li>
+          </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" class="btn btn-primary">Login</a></li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+	<div class="col-sm-4">
+	  <h2>Categories</h2>
+	  <a herf="#">Soccer</a>
+	</div>
+	<div class="col-sm-8">
+	  <h2>Latest Items</h2>
+	  <a herf="#">stuff</a> (Soccer)
+	</div>
+      </div>
+    </div>
+    
+    <footer><center><a href="#">Alex Guesnon</a></center></footer>
+  </body>
+</html>
+"""
+
                 self.wfile.write(output)
                 print(output)
                 return
