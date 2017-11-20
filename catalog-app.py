@@ -20,6 +20,23 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 output=""
                 output+="""<html>
   <head>
+    <style>
+      .navbar-collapse.collapse {
+      display: block!important;
+      }
+
+      .navbar-nav>li, .navbar-nav {
+      float: left !important;
+      }
+
+      .navbar-nav.navbar-right:last-child {
+      margin-right: -15px !important;
+      }
+
+      .navbar-right {
+      float: right!important;
+      }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script
   src="https://code.jquery.com/jquery-3.2.1.js"
@@ -36,18 +53,23 @@ class WebServerHandler(BaseHTTPRequestHandler):
       crossorigin="anonymous">
   </head>
   <body>
-    <nav class="navbar navbar-defualt">
-      <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><h2>Catalog App</h2></li>
-          </ul>
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container-fluid">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+	      <h2>Catalog App</h2>
             </li>
           </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" class="btn btn-primary">Login</a></li>
-          </ul>
-        </div>
+
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      
+	  <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><button class="btn">Login</button></a></li>
+	  </ul>
+	</div>
+      </div>
     </nav>
+    
     <div class="container">
       <div class="row">
 	<div class="col-sm-4">
