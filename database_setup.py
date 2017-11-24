@@ -9,7 +9,7 @@ Base = declarative_base()
 
 class Items(Base):
     __tablename__ = "items"
-    
+
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     category = Column(String(250)) ##may turn this into its own table and then make this a relationship
@@ -23,3 +23,4 @@ Base.metadata.create_all(engine)
 
 if __name__ == "__main__":
     print ("works great")
+ 

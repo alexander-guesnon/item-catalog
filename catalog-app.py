@@ -7,7 +7,7 @@ from database_setup import Base, Items
 engine = create_engine('sqlite:///items.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
-session =DBSession()
+session = DBSession()
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
@@ -17,8 +17,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                output=""#templet
-                output+="""<html>
+                output = ""  # templet
+                output += """<html>
                 <head>
                 <style>
                 .navbar-collapse.collapse {
@@ -62,14 +62,14 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 </ul>
 
 	        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      
+
 	        <ul class="nav navbar-nav navbar-right">
                 <li><a href="/login"><button class="btn">Login</button></a></li>
 	        </ul>
 	        </div>
                 </div>
                 </nav>
-    
+
                 <div class="container">
                 <div class="row">
 	        <div class="col-sm-4">
@@ -82,7 +82,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
 	        </div>
                 </div>
                 </div>
-    
+
                 <footer><center><a href="#">Alex Guesnon</a></center></footer>
                 </body>
                 </html>
@@ -91,12 +91,13 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 print(output)
                 return
-            if self.path.endswith("/soccer"):#dynamicly change this to each catagory
+            # dynamicly change this to each catagory
+            if self.path.endswith("/soccer"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                output=""#templet
-                output+="""<html>
+                output = ""  # templet
+                output += """<html>
                 <head>
                 <style>
                 .navbar-collapse.collapse {
@@ -140,14 +141,14 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 </ul>
 
 	        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      
+
 	        <ul class="nav navbar-nav navbar-right">
                 <li><a href="/login"><button class="btn">Login</button></a></li>
 	        </ul>
 	        </div>
                 </div>
                 </nav>
-    
+
                 <div class="container">
                 <div class="row">
 	        <div class="col-sm-4">
@@ -160,7 +161,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
 	        </div>
                 </div>
                 </div>
-    
+
                 <footer><center><a href="#">Alex Guesnon</a></center></footer>
                 </body>
                 </html>
@@ -168,13 +169,14 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.wfile.write(output)
                 print(output)
                 return
-            
-            if self.path.endswith("/soccer/stuff"):#dynamicly change this to each catagory
+
+            # dynamicly change this to each catagory
+            if self.path.endswith("/soccer/stuff"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                output=""#templet
-                output+="""
+                output = ""  # templet
+                output += """
                 <html>
                 <head>
                 <style>
@@ -219,7 +221,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 </ul>
 
 	        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      
+
 	        <ul class="nav navbar-nav navbar-right">
                 <li><a href="/login"><button class="btn">Login</button></a></li>
 	        </ul>
@@ -237,27 +239,28 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 print(output)
                 return
 
-            if self.path.endswith("/login"):#dynamicly change this to each catagory
+            # dynamicly change this to each catagory
+            if self.path.endswith("/login"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                output=""#templet
-                output+="""
+                output = ""  # templet
+                output += """
                 <html>
                 <head>
                 <style>
                 .navbar-collapse.collapse {
                 display: block!important;
                 }
-                
+
                 .navbar-nav>li, .navbar-nav {
                 float: left !important;
                 }
-                
+
                 .navbar-nav.navbar-right:last-child {
                 margin-right: -15px !important;
                 }
-                
+
                 .navbar-right {
                 float: right!important;
                 }
@@ -285,9 +288,9 @@ class WebServerHandler(BaseHTTPRequestHandler):
 	        <h1><a href="/">Catalog App</a></h1>
                 </li>
                 </ul>
-                
+
 	        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      
+
 	        <ul class="nav navbar-nav navbar-right">
                 <li><a href="/login"><button class="btn">Login</button></a></li>
 	        </ul>
@@ -301,11 +304,11 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 </body>
                 </html>
                 """
-                
+
                 self.wfile.write(output)
                 print(output)
-                return           
-            
+                return
+
         except IOError:
             self.send_error(404, "File Not Found %s" % self.path)
 
@@ -313,7 +316,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
         try:
             if self.path.endswith("/somethingelse"):
                 print("post a test")
-            
+
         except Exception:
             pass
 
@@ -324,7 +327,7 @@ def main():
         server = HTTPServer(('', port), WebServerHandler)
         print "Web server running on port %s" % port
         server.serve_forever()
-    except KeyboardInterrupt:  
+    except KeyboardInterrupt:
         print "Stopping web server..."
         server.socket.close()
 
