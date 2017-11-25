@@ -36,7 +36,10 @@ def category(categoryPath):
 # TODO add custome template per item and  TODO dynamic url
 @app.route("/<categoryPath>/<itemPath>")
 def item(categoryPath, itemPath):
-    return "soccer item"
+    ItemOBJ = session.query(Items).filter(func.lower(Items.category) == func.lower(categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+    return  render_template('item.html', ItemOBJ=ItemOBJ)
 
 
 @app.route("/login")
