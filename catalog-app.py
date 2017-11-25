@@ -1,9 +1,8 @@
-
-import cgi
+from flask import Flask, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Items
-from flask import Flask
+
 app = Flask(__name__)
 
 engine = create_engine('sqlite:///items.db')
@@ -13,23 +12,23 @@ session = DBSession()
 
 
 @app.route("/")
-def hello1():
-    return "root"
+def root():  # put var here to pass to document
+    return render_template('root.html')  # commo goes here to pass to document
 
 
-@app.route("/soccer")
-def hello2():
-    return "soccer"
+@app.route("/soccer")  # dynamic url
+def category():
+    return render_template('category.html')
 
 
 @app.route("/soccer/stuff")
-def hello3():
+def item():
     return "soccer item"
 
 
 @app.route("/login")
-def hello4():
-    return "login"
+def login():
+    return render_template('login.html')
 
 
 if __name__ == "__main__":
