@@ -57,17 +57,21 @@
       <div class="row">
 	<div class="col-sm-4">
 	  <h2>Categories</h2>
+     <a href="#">Soccer</a>
 
 	</div>
 	<div class="col-sm-8">
 	  <h2>Latest Items</h2>
-	  <a herf="#">stuff</a> (Soccer)
+    {% for i in ItemOBJ %}
+    <a href="/{{i.category}}/{{i.name}}">{{i.name}}</a> ({{i.category}})<br>
+    {% endfor %}
+	  <a href="#">stuff</a> (Soccer)
 	</div>
       </div>
     </div>
 
     <footer><center><a href="#">Alex Guesnon</a></center></footer>
 
-     <a herf="#">Soccer</a>
+
   </body>
 </html>

@@ -13,14 +13,26 @@ session = DBSession()
 
 @app.route("/")
 def root():  # put var here to pass to document
-    return render_template('root.html')  # commo goes here to pass to document
+    # make pree stored querrys for larg rewquset volumes
+    ItemOBJ = session.query(Items).all()
+    for i in ItemOBJ:
+        print(i.name)
+        print(i.id)
+        print(i.category)
+        print(i.description)
+    # commo goes here to pass to document
+    return render_template('root.html', ItemOBJ=ItemOBJ)
+
+# TODO dynamic url
 
 
-@app.route("/soccer")  # dynamic url
-def category():
+@app.route("/<itemPath>")
+def category(itemPath):
+    print (itemPath)
     return render_template('category.html')
 
 
+# TODO add custome template per item and  TODO dynamic url
 @app.route("/soccer/stuff")
 def item():
     return "soccer item"
