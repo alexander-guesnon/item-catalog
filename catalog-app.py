@@ -1,7 +1,8 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
 import cgi
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Items
 from flask import Flask
 app = Flask(__name__)
 
@@ -31,17 +32,7 @@ def hello4():
     return "login"
 
 
-def main():
-    try:
-        port = 8080
-        server = HTTPServer(('', port), WebServerHandler)
-        print "Web server running on port %s" % port
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print "Stopping web server..."
-        server.socket.close()
-
-
 if __name__ == "__main__":
-    main()
+    app.debug = True
+    app.run(host='0.0.0.0', port=8080)
     print "server terminated"
