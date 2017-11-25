@@ -57,7 +57,9 @@
       <div class="row">
 	<div class="col-sm-4">
 	  <h2>Categories</h2>
-     <a href="#">Soccer</a>
+    {% for i in ItemsCatalog %}
+    <a href="/{{i.category}}">{{i.category}}</a><br>
+    {% endfor %}
 
 	</div>
 	<div class="col-sm-8">
