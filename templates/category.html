@@ -46,8 +46,12 @@
 
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-	  <ul class="nav navbar-nav navbar-right">
-            <li><a href="login"><button class="btn">Login</button></a></li>
+    <ul class="nav navbar-nav navbar-right">
+      {% if not Login_Session %}
+            <li><a href="http://localhost:8080/login"><button class="btn">Login</button></a></li>
+      {% else %}
+            <li><a href="http://localhost:8080/gdisconnect"><button class="btn">Logout</button></a></li>
+      {% endif %}
 	  </ul>
 	</div>
       </div>

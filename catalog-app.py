@@ -6,8 +6,8 @@ import json
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from flask import make_response
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
-from flask import abort
+from flask import Flask, render_template, request
+from flask import abort, redirect, jsonify, url_for, flash
 from flask import session as login_session
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
@@ -16,7 +16,8 @@ from database_setup import Base, Items
 
 app = Flask(__name__)
 # PRIVATE KEY NOT FOR PRODUCTION USE
-app.secret_key = 'L\x08\xbb\x82.".S\xf6\x0b\xff\xbb\xc4\x93\xcb\xf6W\x15\x03\xa8l\xfd\xb4\xa0\x02\x8a-\xca\x08\x0f\xda`'
+app.secret_key = 'L\x08\xbb\x82.".S\xf6\x0b\xff\xbb\xc4\x93\xcb\xf6W\x15\
+\x03\xa8l\xfd\xb4\xa0\x02\x8a-\xca\x08\x0f\xda`'
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
     'web']['client_id']
 engine = create_engine('sqlite:///items.db')
@@ -31,7 +32,9 @@ def root():
     ItemOBJ = session.query(Items).limit(10).all()
     ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
 
-    return render_template('root.html', ItemOBJ=ItemOBJ, ItemsCatalog=ItemsCatalog)
+    return render_template('root.html', ItemOBJ=ItemOBJ,
+                           ItemsCatalog=ItemsCatalog,
+                           Login_Session=login_session.get('access_token'))
 
 
 @app.route("/<categoryPath>")
@@ -41,16 +44,48 @@ def category(categoryPath):
     if 0 == ItemOBJ.count():
         abort(404)
     ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
-    return render_template('category.html', ItemOBJ=ItemOBJ, ItemsCatalog=ItemsCatalog)
+    return render_template('category.html',
+                           ItemOBJ=ItemOBJ, ItemsCatalog=ItemsCatalog,
+                           Login_Session=login_session.get('access_token'))
 
 
 @app.route("/<categoryPath>/<itemPath>")
 def item(categoryPath, itemPath):
-    ItemOBJ = session.query(Items).filter(func.lower(Items.category) == func.lower(
-        categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-    return render_template('item.html', ItemOBJ=ItemOBJ)
+    return render_template('item.html', ItemOBJ=ItemOBJ,
+                           Login_Session=login_session.get('access_token'))
+
+
+@app.route("/<categoryPath>/<itemPath>/edit")
+def edit(categoryPath, itemPath):
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+    return "edit"
+
+
+@app.route("/<categoryPath>/<itemPath>/delete")
+def delete(categoryPath, itemPath):
+    if login_session.get('access_token') is None:
+        abort(404)
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+    return "delete"
+
+
+@app.route("/additem")
+def add():
+    # can't add the same item
+    return "add item"
 
 
 @app.route("/login")
@@ -58,7 +93,8 @@ def login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE=state)
+    return render_template('login.html', STATE=state,
+                           Login_Session=login_session.get('access_token'))
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -117,46 +153,36 @@ def gconnect():
     login_session['picture'] = data["picture"]
     login_session['email'] = data["email"]
 
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
-    print "done!"
-    return output
+    return "Login Successful"
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    print 'In gdisconnect access token is %s', access_token
-    print 'User name is: '
-    print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+        return render_template('logout.html',
+                               response='Current user not connected.')
+
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % \
+        login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        return render_template('logout.html',
+                               response='Successfully disconnected.')
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps(
+            'Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return render_template('logout.html',
+                               response='Failed to revoke token for given \
+                                user.')
+
 
 if __name__ == "__main__":
     app.debug = True
