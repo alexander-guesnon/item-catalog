@@ -45,8 +45,8 @@
     </div>
   </nav>
   <h3 style="color: red">{{message}}</h3>
-  <h2>Add Item</h2>
-  <form action="/add" id="itemform" method="post">
+  <h2>Edit Item ({{itemPath}})</h2>
+  <form action="http://localhost:8080/{{categoryPath}}/{{itemPath}}/edit" id="itemform" method="post">
     Item name:<br>
     <input type="text" maxlength="80" name="name">
     <br><br> Item Category:<br>

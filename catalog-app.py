@@ -64,12 +64,86 @@ def item(categoryPath, itemPath):
 def edit(categoryPath, itemPath):
     if login_session.get('access_token') is None:
         abort(404)
+
     ItemOBJ = session.query(Items).filter(
         func.lower(Items.category) == func.lower(
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-    return "edit"
+
+    ItemsCatalog = session.query(
+        Items.category).group_by(Items.category).all()
+    return render_template('edit.html',
+                           ItemsCatalog=ItemsCatalog,
+                           categoryPath=categoryPath,
+                           itemPath=itemPath,
+                           message="")
+
+
+@app.route("/<categoryPath>/<itemPath>/edit", methods=['POST'])
+def editDB(categoryPath, itemPath):
+    if login_session.get('access_token') is None:
+        abort(404)
+
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+
+    if len(list(request.form)) != 3:
+        ItemsCatalog = session.query(
+            Items.category).group_by(Items.category).all()
+        return render_template('edit.html',
+                               ItemsCatalog=ItemsCatalog,
+                               message="ERROR: All info was not filled out")
+
+    if not list(request.form)[0] == 'category' or \
+            not list(request.form)[1] == 'name' or \
+            not list(request.form)[2] == 'description':
+        ItemsCatalog = session.query(
+            Items.category).group_by(Items.category).all()
+        return render_template('edit.html',
+                               ItemsCatalog=ItemsCatalog,
+                               message="ERROR: Forum is not correct")
+
+    # is the info the right length
+    # this is mostly to sanitize input
+    # prevent rouge post request
+    if not (len(request.form['category']) > 0 and
+            len(request.form['category']) <= 250) or \
+            not (len(request.form['name']) > 0 and
+                 len(request.form['name']) <= 80) or \
+            not (len(request.form['description']) > 0 and
+                 len(request.form['description']) <= 250):
+        ItemsCatalog = session.query(
+            Items.category).group_by(Items.category).all()
+        return render_template('edit.html',
+                               ItemsCatalog=ItemsCatalog,
+                               message="ERROR: not the right length")
+
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(request.form['category']))
+    for i in ItemOBJ:
+        if request.form['name'] == i.name or \
+                request.form['category'] != i.category:
+            ItemsCatalog = session.query(
+                Items.category).group_by(Items.category).all()
+            return render_template('edit.html',
+                                   ItemsCatalog=ItemsCatalog,
+                                   message="ERROR: repeat item")
+
+    itemQuery = session.query(Items).filter_by(id=ItemOBJ[0].id).one()
+    # Create new Restaurant class
+    if itemQuery != []:
+        itemQuery.name = request.form['name']
+        itemQuery.category = request.form['category']
+        itemQuery.description = request.form['description']
+        session.add(itemQuery)
+        session.commit()
+    return render_template('redirect_response.html', title="Item edit",
+                           response='The item has been edited to \
+                            the database.')
 
 
 @app.route("/<categoryPath>/<itemPath>/delete")
@@ -92,7 +166,7 @@ def add():
     return render_template('add.html', ItemsCatalog=ItemsCatalog, message="")
 
 
-@app.route('/additem', methods=['POST'])
+@app.route("/add", methods=['POST'])
 def addToDB():
     if login_session.get('access_token') is None:
         abort(404)
