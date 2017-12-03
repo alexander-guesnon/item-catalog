@@ -2,8 +2,7 @@
 <html>
 
 <head>
-  <title>Catalog App</title>
-
+  <title>Catalog App - Add Item</title>
   <style>
     .navbar-collapse.collapse {
       display: block!important;
@@ -33,43 +32,39 @@
     <div class="container-fluid">
       <ul class="nav navbar-nav navbar-left">
         <li>
-          <h2>Catalog App</h2>
+          <h1>Catalog App</h1>
         </li>
       </ul>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
         <ul class="nav navbar-nav navbar-right">
-          {% if not Login_Session %}
-          <li><a href="login"><button class="btn">Login</button></a></li>
-          {% else %}
-          <li><a href="add"><button class="btn">Add Item</button></a></li>
-          <li><a href="gdisconnect"><button class="btn">Logout</button></a></li>
-          {% endif %}
+          <li><a href="http://localhost:8080/gdisconnect"><button class="btn">Logout</button></a></li>
         </ul>
       </div>
     </div>
   </nav>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-4">
-        <h2>Categories</h2> {% for i in ItemsCatalog %}
-        <a href="/{{i.category}}">{{i.category}}</a><br> {% endfor %}
-
-      </div>
-      <div class="col-sm-8">
-        <h2>Latest Items</h2> {% for i in ItemOBJ %}
-        <a href="/{{i.category}}/{{i.name}}">{{i.name}}</a> ({{i.category}})<br> {% endfor %}
-      </div>
-    </div>
-  </div>
+  <h3 style="color: red">{{message}}</h3>
+  <h2>Add Item</h2>
+  <form action="/additem" id="itemform" method="post">
+    Item name:<br>
+    <input type="text" maxlength="80" name="name">
+    <br><br> Item Category:<br>
+    <select name="category" form="itemform">
+      <option value="" disabled selected>Select A Category</option>
+      {% for i in ItemsCatalog %}
+      <option value="{{i.category}}">{{i.category}}</option>
+      {% endfor %}
+    </select>
+    <br><br>Item Description:<br>
+    <textarea name="description" rows="9" maxlength="250" cols="30"></textarea>
+    <br>
+    <input type="submit">
+  </form>
 
   <footer>
-    <center><a href="#">Alex Guesnon</a></center>
+    <center><a href="http://localhost:8080">Alex Guesnon</a></center>
   </footer>
-
-
 </body>
 
 </html>
