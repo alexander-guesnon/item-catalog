@@ -56,7 +56,10 @@ def item(categoryPath, itemPath):
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-    return render_template('item.html', ItemOBJ=ItemOBJ,
+    return render_template('item.html',
+                           ItemOBJ=ItemOBJ,
+                           categoryPath=categoryPath,
+                           itemPath=itemPath,
                            Login_Session=login_session.get('access_token'))
 
 
@@ -105,6 +108,8 @@ def editDB(categoryPath, itemPath):
             Items.category).group_by(Items.category).all()
         return render_template('edit.html',
                                ItemsCatalog=ItemsCatalog,
+                               categoryPath=categoryPath,
+                               itemPath=itemPath,
                                message="ERROR: Forum is not correct")
 
     # is the info the right length
@@ -120,6 +125,8 @@ def editDB(categoryPath, itemPath):
             Items.category).group_by(Items.category).all()
         return render_template('edit.html',
                                ItemsCatalog=ItemsCatalog,
+                               categoryPath=categoryPath,
+                               itemPath=itemPath,
                                message="ERROR: not the right length")
 
     ItemOBJ = session.query(Items).filter(
@@ -131,6 +138,8 @@ def editDB(categoryPath, itemPath):
                 Items.category).group_by(Items.category).all()
             return render_template('edit.html',
                                    ItemsCatalog=ItemsCatalog,
+                                   categoryPath=categoryPath,
+                                   itemPath=itemPath,
                                    message="ERROR: repeat item")
 
     itemQuery = session.query(Items).filter_by(id=ItemOBJ[0].id).one()
@@ -148,6 +157,22 @@ def editDB(categoryPath, itemPath):
 
 @app.route("/<categoryPath>/<itemPath>/delete")
 def delete(categoryPath, itemPath):
+    if login_session.get('access_token') is None:
+        abort(404)
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+
+    return render_template('delete.html',
+                           categoryPath=categoryPath,
+                           itemPath=itemPath,
+                           message="ERROR: repeat item")
+
+
+@app.route("/<categoryPath>/<itemPath>/delete", methods=['POST'])
+def deleteItemDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:
         abort(404)
     ItemOBJ = session.query(Items).filter(

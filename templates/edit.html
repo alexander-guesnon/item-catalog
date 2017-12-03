@@ -39,14 +39,14 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="http://localhost:8080/gdisconnect"><button class="btn">Logout</button></a></li>
+          <li><a href="/gdisconnect"><button class="btn">Logout</button></a></li>
         </ul>
       </div>
     </div>
   </nav>
   <h3 style="color: red">{{message}}</h3>
   <h2>Edit Item ({{itemPath}})</h2>
-  <form action="http://localhost:8080/{{categoryPath}}/{{itemPath}}/edit" id="itemform" method="post">
+  <form action="/{{categoryPath}}/{{itemPath}}/edit" id="itemform" method="post">
     Item name:<br>
     <input type="text" maxlength="80" name="name">
     <br><br> Item Category:<br>
@@ -63,7 +63,7 @@
   </form>
 
   <footer>
-    <center><a href="http://localhost:8080">Alex Guesnon</a></center>
+    <center><a href="/">Alex Guesnon</a></center>
   </footer>
 </body>
 

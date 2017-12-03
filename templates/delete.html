@@ -44,21 +44,9 @@
       </div>
     </div>
   </nav>
-  <h3 style="color: red">{{message}}</h3>
-  <h2>Add Item</h2>
-  <form action="/add" id="itemform" method="post">
-    Item name:<br>
-    <input type="text" maxlength="80" name="name">
-    <br><br> Item Category:<br>
-    <select name="category" form="itemform">
-      <option value="" disabled selected>Select A Category</option>
-      {% for i in ItemsCatalog %}
-      <option value="{{i.category}}">{{i.category}}</option>
-      {% endfor %}
-    </select>
-    <br><br>Item Description:<br>
-    <textarea name="description" rows="9" maxlength="250" cols="30"></textarea>
-    <br>
+  <h2>Delete Item ({{itemPath}})</h2>
+  <p>Are you sure you want to delete this item?</p>
+  <form action="/{{categoryPath}}/{{itemPath}}/delete" id="itemform" method="post">
     <input type="submit">
   </form>
 

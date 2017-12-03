@@ -48,9 +48,9 @@
 
     <ul class="nav navbar-nav navbar-right">
       {% if not Login_Session %}
-            <li><a href="http://localhost:8080/login"><button class="btn">Login</button></a></li>
+            <li><a href="/login"><button class="btn">Login</button></a></li>
       {% else %}
-            <li><a href="http://localhost:8080/gdisconnect"><button class="btn">Logout</button></a></li>
+            <li><a href="/gdisconnect"><button class="btn">Logout</button></a></li>
       {% endif %}
 	  </ul>
 	</div>
@@ -59,6 +59,8 @@
 
     <h2>{{ItemOBJ[0].name}}</h2>
     <p>{{ItemOBJ[0].description}}</p>
-    <footer><center><a href="http://localhost:8080">Alex Guesnon</a></center></footer>
+    <a href="/{{categoryPath}}/{{itemPath}}/edit">Edit</a> |
+    <a href="/{{categoryPath}}/{{itemPath}}/delete">Delete</a>
+    <footer><center><a href="/">Alex Guesnon</a></center></footer>
   </body>
 </html>

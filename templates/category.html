@@ -48,9 +48,9 @@
 
     <ul class="nav navbar-nav navbar-right">
       {% if not Login_Session %}
-            <li><a href="http://localhost:8080/login"><button class="btn">Login</button></a></li>
+            <li><a href="/login"><button class="btn">Login</button></a></li>
       {% else %}
-            <li><a href="http://localhost:8080/gdisconnect"><button class="btn">Logout</button></a></li>
+            <li><a href="/gdisconnect"><button class="btn">Logout</button></a></li>
       {% endif %}
 	  </ul>
 	</div>
@@ -75,7 +75,7 @@
       </div>
     </div>
 
-    <footer><center><a href="#">Alex Guesnon</a></center></footer>
+    <footer><center><a href="/">Alex Guesnon</a></center></footer>
 
 
   </body>
