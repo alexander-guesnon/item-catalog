@@ -155,7 +155,16 @@ def delete(categoryPath, itemPath):
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-    return "delete"
+
+    itemtQuery = session.query(
+        Items).filter_by(id=ItemOBJ[0].id).one()
+    # Create new Restaurant class
+    if itemtQuery != []:
+        session.delete(itemtQuery)
+        session.commit()
+    return render_template('redirect_response.html', title="Item deleted",
+                           response='The item has been deleted to the \
+                            database.')
 
 
 @app.route("/add")
