@@ -20,6 +20,7 @@
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <script
   src="https://code.jquery.com/jquery-3.2.1.js"
   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
@@ -33,6 +34,7 @@
       rel="stylesheet"
       integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
       crossorigin="anonymous">
+      <script src="//apis.google.com/js/platform.js?onload=start"> </script>
   </head>
   <body>
     <nav class="navbar navbar-default" role="navigation">
@@ -52,8 +54,45 @@
       </div>
     </nav>
 
-    <h2>LOGIN</h2>
-    putin oath google and facebook
+    <h2>LOGIN</h2><br>
+    <div id="signinButton">
+<span class="g-signin"
+  data-scope="openid email"
+  data-clientid="1077892694714-9o9pm88r4jii50uu7h6hhq80qi9lnpmb.apps.googleusercontent.com"
+  data-redirecturi="postmessage"
+  data-accesstype="offline"
+  data-cookiepolicy="single_host_origin"
+  data-callback="signInCallback"
+  data-approvalprompt="force">
+</span>
+</div>
+<div id="result"></div>
 
+<script>
+function signInCallback(authResult) {
+  if (authResult['code']) {
+    $('#signinButton').attr('style', 'display: none');
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+         setTimeout(function() {
+          window.location.href = "/";
+        }, 4000);
+
+      } else if (authResult['error']) {
+    console.log('There was an error: ' + authResult['error']);
+  } else {
+        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+         }
+      }
+
+  }); } }
+</script>
   </body>
 </html>

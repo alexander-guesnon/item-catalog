@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>test</title>
+    <title>Catalog App</title>
 
     <style>
       .navbar-collapse.collapse {
@@ -47,7 +47,7 @@
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
 	  <ul class="nav navbar-nav navbar-right">
-            <li><a href="#"><button class="btn">Login</button></a></li>
+            <li><a href="login"><button class="btn">Login</button></a></li>
 	  </ul>
 	</div>
       </div>
@@ -67,7 +67,6 @@
     {% for i in ItemOBJ %}
     <a href="/{{i.category}}/{{i.name}}">{{i.name}}</a> ({{i.category}})<br>
     {% endfor %}
-	  <a href="#">stuff</a> (Soccer)
 	</div>
       </div>
     </div>
