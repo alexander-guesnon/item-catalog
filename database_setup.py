@@ -13,7 +13,6 @@ class Items(Base):
 
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
-    # may turn this into its own table and then make this a relationship
     category = Column(String(250))
     description = Column(String(250))
 

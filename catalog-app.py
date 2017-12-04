@@ -350,6 +350,68 @@ def gdisconnect():
                                 user.')
 
 
+@app.route('/api/v1/catalog.json')  # all
+def apiCatalog():
+    ItemOBJ = session.query(Items).all()
+    itemList = []
+    for i in ItemOBJ:
+        # python wont refesh data with out it being zeroed out
+        itemDicionaryTemp = {
+            "name": "",
+            "id": 0,
+            "category": "",
+            "description": ""
+        }
+        itemDicionaryTemp["name"] = i.name
+        itemDicionaryTemp["id"] = i.id
+        itemDicionaryTemp["category"] = i.category
+        itemDicionaryTemp["description"] = i.description
+        itemList.append(itemDicionaryTemp)
+    return jsonify(itemList)
+
+
+@app.route('/api/v1/query/<categoryPath>.json')  # all
+def apiCategory(categoryPath):
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(categoryPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+    itemList = []
+    for i in ItemOBJ:
+        # python wont refesh data with out it being zeroed out
+        itemDicionaryTemp = {
+            "name": "",
+            "id": 0,
+            "category": "",
+            "description": ""
+        }
+        itemDicionaryTemp["name"] = i.name
+        itemDicionaryTemp["id"] = i.id
+        itemDicionaryTemp["category"] = i.category
+        itemDicionaryTemp["description"] = i.description
+        itemList.append(itemDicionaryTemp)
+    return jsonify(itemList)
+
+
+@app.route('/api/v1/query/<categoryPath>/<itemPath>.json')  # all
+def apiItem(categoryPath, itemPath):
+    ItemOBJ = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(
+            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    if 0 == ItemOBJ.count():
+        abort(404)
+    itemDicionary = {
+        "name": "",
+        "id": 0,
+        "category": "",
+        "description": ""
+    }
+    itemDicionary["name"] = ItemOBJ[0].name
+    itemDicionary["id"] = ItemOBJ[0].id
+    itemDicionary["category"] = ItemOBJ[0].category
+    itemDicionary["description"] = ItemOBJ[0].description
+    return jsonify(itemDicionary)
+
 if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0', port=8080)
