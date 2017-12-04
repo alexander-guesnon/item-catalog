@@ -29,7 +29,7 @@ session = DBSession()
 @app.route("/")
 def root():
 
-    ItemOBJ = session.query(Items).limit(10).all()
+    ItemOBJ = session.query(Items).order_by(Items.id.desc()).limit(10).all()
     ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
 
     return render_template('root.html', ItemOBJ=ItemOBJ,
@@ -411,6 +411,7 @@ def apiItem(categoryPath, itemPath):
     itemDicionary["category"] = ItemOBJ[0].category
     itemDicionary["description"] = ItemOBJ[0].description
     return jsonify(itemDicionary)
+
 
 if __name__ == "__main__":
     app.debug = True
