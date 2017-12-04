@@ -145,12 +145,23 @@ def editDB(categoryPath, itemPath):
                                categoryPath=categoryPath,
                                itemPath=itemPath,
                                message="ERROR: not the right length")
-    # looking to see if the item is beeing reapeted
+
     itemsInCategory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(request.form['category']))
+        func.lower(Items.category) == func.lower(categoryPath))
+    if len(list(itemsInCategory)) < 2 and \
+            request.form['category'] != itemsInCategory[0].category:
+        ItemsCatalog = session.query(
+            Items.category).group_by(Items.category).all()
+        return render_template('edit.html',
+                               ItemsCatalog=ItemsCatalog,
+                               categoryPath=categoryPath,
+                               itemPath=itemPath,
+                               message="ERROR: trying to delete catagory")
+
+    # looking to see if the item is beeing reapeted
     for i in itemsInCategory:
-        if request.form['name'] == i.name or \
-                request.form['category'] != i.category:
+        if request.form['name'] == i.name and \
+                request.form['category'] == i.category:
             ItemsCatalog = session.query(
                 Items.category).group_by(Items.category).all()
             return render_template('edit.html',
@@ -159,13 +170,13 @@ def editDB(categoryPath, itemPath):
                                    itemPath=itemPath,
                                    message="ERROR: repeat item")
 
-    itemQuery = session.query(Items).filter_by(id=ItemOBJ[0].id).one()
-    if itemQuery != []:
-        itemQuery.name = request.form['name']
-        itemQuery.category = request.form['category']
-        itemQuery.description = request.form['description']
-        session.add(itemQuery)
-        session.commit()
+    #itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
+    # if itemQuery != []:
+    #    itemQuery.name = request.form['name']
+    #    itemQuery.category = request.form['category']
+    #    itemQuery.description = request.form['description']
+    #    session.add(itemQuery)
+    #    session.commit()
     return render_template('redirect_response.html', title="Item edit",
                            response='The item has been edited to \
                             the database.')
@@ -186,7 +197,8 @@ def delete(categoryPath, itemPath):
     # dont wont do delete a catagory
     tempCatagory = session.query(Items).filter(
         func.lower(Items.category) == func.lower(categoryPath))
-    if len(list(tempCatagory)) > 2:
+    print(len(list(tempCatagory)))
+    if len(list(tempCatagory)) < 2:
         return render_template('redirect_response.html',
                                title="ERROR:Item can not be deleted",
                                response='you are trying to delete a catagory \
@@ -202,21 +214,23 @@ def delete(categoryPath, itemPath):
 def deleteItemDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
-    ItemOBJ = session.query(Items).filter(
+    queriedItem = session.query(Items).filter(
         func.lower(Items.category) == func.lower(
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
-    if 0 == ItemOBJ.count():  # checking if it extists
+    if 0 == queriedItem.count():  # checking if it extists
         abort(404)
     # dont wont do delete a catagory
     tempCatagory = session.query(Items).filter(
         func.lower(Items.category) == func.lower(categoryPath))
-    if len(list(tempCatagory)) > 2:
+
+    if len(list(tempCatagory)) < 2:
         return render_template('redirect_response.html',
                                title="ERROR:Item can not be deleted",
                                response='you are trying to delete a catagory \
                                 database.')
-    if itemtQuery != []:
-        session.delete(itemtQuery)
+    itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
+    if itemQuery != []:
+        session.delete(itemQuery)
         session.commit()
     return render_template('redirect_response.html', title="Item deleted",
                            response='The item has been deleted to the \
@@ -274,8 +288,8 @@ def addToDB():
     itemsInCategory = session.query(Items).filter(
         func.lower(Items.category) == func.lower(request.form['category']))
     for i in itemsInCategory:
-        if request.form['name'] == i.name or \
-                request.form['category'] != i.category:
+        if request.form['name'] == i.name and \
+                request.form['category'] == i.category:
             ItemsCatalog = session.query(
                 Items.category).group_by(Items.category).all()
             return render_template('add.html',
