@@ -170,13 +170,13 @@ def editDB(categoryPath, itemPath):
                                    itemPath=itemPath,
                                    message="ERROR: repeat item")
 
-    #itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
-    # if itemQuery != []:
-    #    itemQuery.name = request.form['name']
-    #    itemQuery.category = request.form['category']
-    #    itemQuery.description = request.form['description']
-    #    session.add(itemQuery)
-    #    session.commit()
+    itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
+    if itemQuery != []:
+        itemQuery.name = request.form['name']
+        itemQuery.category = request.form['category']
+        itemQuery.description = request.form['description']
+        session.add(itemQuery)
+        session.commit()
     return render_template('redirect_response.html', title="Item edit",
                            response='The item has been edited to \
                             the database.')
