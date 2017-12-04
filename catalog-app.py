@@ -164,11 +164,16 @@ def delete(categoryPath, itemPath):
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-
+    tempCatagory = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(categoryPath))
+    if len(list(tempCatagory)) > 2:
+        return render_template('redirect_response.html',
+                               title="ERROR:Item can not be deleted",
+                               response='you are trying to delete a catagory \
+                                database.')
     return render_template('delete.html',
                            categoryPath=categoryPath,
-                           itemPath=itemPath,
-                           message="ERROR: repeat item")
+                           itemPath=itemPath)
 
 
 @app.route("/<categoryPath>/<itemPath>/delete", methods=['POST'])
@@ -180,10 +185,13 @@ def deleteItemDB(categoryPath, itemPath):
             categoryPath), func.lower(Items.name) == func.lower(itemPath))
     if 0 == ItemOBJ.count():
         abort(404)
-
-    itemtQuery = session.query(
-        Items).filter_by(id=ItemOBJ[0].id).one()
-    # Create new Restaurant class
+    tempCatagory = session.query(Items).filter(
+        func.lower(Items.category) == func.lower(categoryPath))
+    if len(list(tempCatagory)) > 2:
+        return render_template('redirect_response.html',
+                               title="ERROR:Item can not be deleted",
+                               response='you are trying to delete a catagory \
+                                database.')
     if itemtQuery != []:
         session.delete(itemtQuery)
         session.commit()
