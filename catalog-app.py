@@ -47,7 +47,7 @@ def root():
 # specified catagory
 
 
-@app.route("/<categoryPath>")
+@app.route("/<path:categoryPath>")
 def category(categoryPath):
     itemsInCategory = session.query(Items).filter(
         func.lower(Items.category) == func.lower(categoryPath))
@@ -61,7 +61,7 @@ def category(categoryPath):
 # This will show indificual items that you wish to view
 
 
-@app.route("/<categoryPath>/<itemPath>")
+@app.route("/<path:categoryPath>/<path:itemPath>")
 def item(categoryPath, itemPath):
     queriedItem = session.query(Items).filter(
         func.lower(Items.category) == func.lower(
@@ -77,7 +77,7 @@ def item(categoryPath, itemPath):
 # sends html file to find out what edits you would like to make
 
 
-@app.route("/<categoryPath>/<itemPath>/edit")
+@app.route("/<path:categoryPath>/<path:itemPath>/edit")
 def edit(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
@@ -99,7 +99,7 @@ def edit(categoryPath, itemPath):
 # commits edits you have specified
 
 
-@app.route("/<categoryPath>/<itemPath>/edit", methods=['POST'])
+@app.route("/<path:categoryPath>/<path:itemPath>/edit", methods=['POST'])
 def editDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
@@ -185,7 +185,7 @@ def editDB(categoryPath, itemPath):
 # item
 
 
-@app.route("/<categoryPath>/<itemPath>/delete")
+@app.route("/<path:categoryPath>/<path:itemPath>/delete")
 def delete(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
@@ -210,7 +210,7 @@ def delete(categoryPath, itemPath):
 # this will delete the specified itme
 
 
-@app.route("/<categoryPath>/<itemPath>/delete", methods=['POST'])
+@app.route("/<path:categoryPath>/<path:itemPath>/delete", methods=['POST'])
 def deleteItemDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
@@ -331,7 +331,7 @@ def gconnect():
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
-        response - \
+        response = \
             make_response(json.dumps(
                 'Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -428,7 +428,7 @@ def apiCatalog():
 # prints all data in specified catagory to a json file
 
 
-@app.route('/api/v1/query/<categoryPath>.json')
+@app.route('/api/v1/query/<path:categoryPath>.json')
 def apiCategory(categoryPath):
     itemsInCategory = session.query(Items).filter(
         func.lower(Items.category) == func.lower(categoryPath))
@@ -453,7 +453,7 @@ def apiCategory(categoryPath):
 # prints individual item from DB
 
 
-@app.route('/api/v1/query/<categoryPath>/<itemPath>.json')  # all
+@app.route('/api/v1/query/<path:categoryPath>/<path:itemPath>.json')  # all
 def apiItem(categoryPath, itemPath):
     queriedItem = session.query(Items).filter(
         func.lower(Items.category) == func.lower(
