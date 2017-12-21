@@ -11,7 +11,7 @@ from flask import abort, redirect, jsonify, url_for, flash
 from flask import session as login_session
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Items
+from database_setup import Base, Items, Catagory
 
 
 app = Flask(__name__)
@@ -24,11 +24,6 @@ engine = create_engine('sqlite:///items.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-
-
-def somthing(tempRequst):
-    print(tempRequst)
-    return "hello"
 
 
 # This is the rooot endswitch this dictates the begainging of the website.
