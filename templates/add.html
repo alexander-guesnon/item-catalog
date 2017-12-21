@@ -32,7 +32,7 @@
     <div class="container-fluid">
       <ul class="nav navbar-nav navbar-left">
         <li>
-          <h1>Catalog App</h1>
+          <h1><a href="/">Catalog App</a></h1>
         </li>
       </ul>
 
@@ -53,7 +53,7 @@
     <select name="category" form="itemform">
       <option value="" disabled selected>Select A Category</option>
       {% for i in ItemsCatalog %}
-      <option value="{{i.category}}">{{i.category}}</option>
+      <option value="{{i.name}}">{{i.name}}</option>
       {% endfor %}
     </select>
     <br><br>Item Description:<br>

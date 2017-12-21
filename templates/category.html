@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Catalog App - {{ItemOBJ[0].category}}</title>
+    <title>Catalog App - {{categoryPath}}</title>
 
     <style>
       .navbar-collapse.collapse {
@@ -36,47 +36,53 @@
       crossorigin="anonymous">
   </head>
   <body>
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-          <ul class="nav navbar-nav navbar-left">
-            <li>
-	      <h2>Catalog App</h2>
-            </li>
-          </ul>
 
-	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  <nav class="navbar navbar-default" role="navigation">
+       <div class="container-fluid">
+           <ul class="nav navbar-nav navbar-left">
+             <li>
+ 	      <h2><a href="/">Catalog App</a></h2>
+             </li>
+           </ul>
 
-    <ul class="nav navbar-nav navbar-right">
-      {% if not Login_Session %}
-            <li><a href="/login"><button class="btn">Login</button></a></li>
-      {% else %}
-            <li><a href="/gdisconnect"><button class="btn">Logout</button></a></li>
-      {% endif %}
-	  </ul>
-	</div>
-      </div>
-    </nav>
+ 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-    <div class="container">
-      <div class="row">
-	<div class="col-sm-4">
-	  <h2>Categories</h2>
-    {% for i in ItemsCatalog %}
-    <a href="/{{i.category}}">{{i.category}}</a><br>
+     <ul class="nav navbar-nav navbar-right">
+       {% if not Login_Session %}
+             <li><a href="/login"><button class="btn">Login</button></a></li>
+       {% else %}
+             <li><a href="/gdisconnect"><button class="btn">Logout</button></a></li>
+       {% endif %}
+ 	  </ul>
+ 	</div>
+       </div>
+     </nav>
+
+     <div class="container">
+       <div class="row">
+ 	<div class="col-sm-4">
+ 	  <h2>Categories</h2>
+     {% for i in ItemsCatalog %}
+     <a href="/{{i.name}}">{{i.name}}</a><br>
+     {% endfor %}
+
+ 	</div>
+ 	<div class="col-sm-8">
+
+    {% if 0 == itemsInCategory.count() %}
+    <h2>{{categoryPath}} Items ( {{ itemsInCategory.count() }} items)</h2>
+    <p>Their is no items in this Catagory</p>
+    {% else %}
+    <h2>{{itemsInCategory[0][1].name}} Items ( {{ itemsInCategory.count() }} items)</h2>
+    {% for i in itemsInCategory %}
+    <a href="/{{i[1].name}}/{{i[0].name}}">{{i[0].name}}</a><br>
     {% endfor %}
+    {% endif %}
 
-	</div>
-	<div class="col-sm-8">
-	  <h2>{{ItemOBJ[0].category}} Items ( {{ ItemOBJ.count() }} items)</h2>
-    {% for i in ItemOBJ %}
-    <a href="/{{i.category}}/{{i.name}}">{{i.name}}</a><br>
-    {% endfor %}
-	</div>
-      </div>
-    </div>
+ 	</div>
+       </div>
+     </div>
 
-    <footer><center><a href="/">Alex Guesnon</a></center></footer>
-
-
+     <footer><center><a href="/">Alex Guesnon</a></center></footer>
   </body>
 </html>

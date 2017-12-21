@@ -33,7 +33,7 @@
     <div class="container-fluid">
       <ul class="nav navbar-nav navbar-left">
         <li>
-          <h2>Catalog App</h2>
+          <h2><a href="/">Catalog App</a></h2>
         </li>
       </ul>
 
@@ -54,13 +54,13 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-4">
-        <h2>Categories</h2> {% for i in ItemsCatalog %}
-        <a href="/{{i.category}}">{{i.category}}</a><br> {% endfor %}
+        <h2>Catagories</h2> {% for i in ItemsCatalog %}
+        <a href="/{{i.name}}">{{i.name}}</a><br> {% endfor %}
 
       </div>
       <div class="col-sm-8">
         <h2>Latest Items</h2> {% for i in ItemOBJ %}
-        <a href="/{{i.category}}/{{i.name}}">{{i.name}}</a> ({{i.category}})<br> {% endfor %}
+        <a href="/{{i.catagory.name}}/{{i.name}}">{{i.name}}</a> ({{i.catagory.name}})<br> {% endfor %}
       </div>
     </div>
   </div>

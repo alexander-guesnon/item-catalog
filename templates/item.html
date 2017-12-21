@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Catalog App - {{ItemOBJ[0].name}}</title>
+    <title>Catalog App - {{queriedItem[0][0].name}}</title>
     <style>
       .navbar-collapse.collapse {
       display: block!important;
@@ -40,7 +40,7 @@
       <div class="container-fluid">
           <ul class="nav navbar-nav navbar-left">
             <li>
-	      <h1>Catalog App</h1>
+	      <h1><a href="/">Catalog App</a></h1>
             </li>
           </ul>
 
@@ -57,10 +57,14 @@
       </div>
     </nav>
 
-    <h2>{{ItemOBJ[0].name}}</h2>
-    <p>{{ItemOBJ[0].description}}</p>
+    <h2>{{queriedItem[0][0].name}}</h2>
+    <p>{{queriedItem[0][0].description}}</p>
+
+    {% if Login_Session %}
     <a href="/{{categoryPath}}/{{itemPath}}/edit">Edit</a> |
     <a href="/{{categoryPath}}/{{itemPath}}/delete">Delete</a>
+    {% endif %}
+    <br><p>This is made by ({{queriedItem[0][0].user_id}})</p>
     <footer><center><a href="/">Alex Guesnon</a></center></footer>
   </body>
 </html>

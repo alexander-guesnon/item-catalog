@@ -32,8 +32,7 @@ session = DBSession()
 @app.route("/")
 def root():
     top10Items = session.query(Items).order_by(Items.id.desc()).limit(10).all()
-    ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
-
+    ItemsCatalog = session.query(Catagory).all()
     return render_template('root.html', ItemOBJ=top10Items,
                            ItemsCatalog=ItemsCatalog,
                            Login_Session=login_session.get('access_token'))
@@ -44,13 +43,17 @@ def root():
 
 @app.route("/<path:categoryPath>")
 def category(categoryPath):
-    itemsInCategory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(categoryPath))
-    if 0 == itemsInCategory.count():  # checking if it extists
+    categoryCheck = session.query(Catagory).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath))
+    if 0 == categoryCheck.count():  # checking if it extists
         abort(404)
-    ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
-    return render_template('category.html',
-                           ItemOBJ=itemsInCategory, ItemsCatalog=ItemsCatalog,
+    itemsInCategory = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath))
+    ItemsCatalog = session.query(Catagory).all()
+    return render_template('category.html', categoryPath=categoryPath,
+                           itemsInCategory=itemsInCategory,
+                           ItemsCatalog=ItemsCatalog,
                            Login_Session=login_session.get('access_token'))
 
 # This will show indificual items that you wish to view
@@ -58,13 +61,16 @@ def category(categoryPath):
 
 @app.route("/<path:categoryPath>/<path:itemPath>")
 def item(categoryPath, itemPath):
-    queriedItem = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
+
     if 0 == queriedItem.count():  # checking if it extists
         abort(404)
+    print(queriedItem[0][0].name)
     return render_template('item.html',
-                           ItemOBJ=queriedItem,
+                           queriedItem=queriedItem,
                            categoryPath=categoryPath,
                            itemPath=itemPath,
                            Login_Session=login_session.get('access_token'))
@@ -77,14 +83,14 @@ def edit(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
 
-    queriedItem = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
     if 0 == queriedItem.count():  # checking if it extists
         abort(404)
 
-    ItemsCatalog = session.query(
-        Items.category).group_by(Items.category).all()
+    ItemsCatalog = session.query(Catagory).all()
     return render_template('edit.html',
                            ItemsCatalog=ItemsCatalog,
                            categoryPath=categoryPath,
@@ -99,15 +105,15 @@ def editDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
 
-    queriedItem = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
     if 0 == queriedItem.count():  # checking if it extists
         abort(404)
 
     if len(list(request.form)) != 3:  # is their 3 items passed
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('edit.html',
                                ItemsCatalog=ItemsCatalog,
                                message="ERROR: All info was not filled out")
@@ -116,8 +122,7 @@ def editDB(categoryPath, itemPath):
     if not list(request.form)[0] == 'category' or \
             not list(request.form)[1] == 'name' or \
             not list(request.form)[2] == 'description':
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('edit.html',
                                ItemsCatalog=ItemsCatalog,
                                categoryPath=categoryPath,
@@ -128,53 +133,47 @@ def editDB(categoryPath, itemPath):
     # this is mostly to sanitize input
     # prevent rouge post request
     if not (len(request.form['category']) > 0 and
-            len(request.form['category']) <= 250) or \
+            len(request.form['category']) <= 80) or \
             not (len(request.form['name']) > 0 and
                  len(request.form['name']) <= 80) or \
             not (len(request.form['description']) > 0 and
                  len(request.form['description']) <= 250):
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('edit.html',
                                ItemsCatalog=ItemsCatalog,
                                categoryPath=categoryPath,
                                itemPath=itemPath,
                                message="ERROR: not the right length")
-
-    itemsInCategory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(categoryPath))
-    if len(list(itemsInCategory)) < 2 and \
-            request.form['category'] != itemsInCategory[0].category:
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
-        return render_template('edit.html',
-                               ItemsCatalog=ItemsCatalog,
-                               categoryPath=categoryPath,
-                               itemPath=itemPath,
-                               message="ERROR: trying to delete catagory")
-
+    itemsInCategory = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(request.form['category']))
     # looking to see if the item is beeing reapeted
     for i in itemsInCategory:
-        if request.form['name'] == i.name and \
-                request.form['category'] == i.category:
-            ItemsCatalog = session.query(
-                Items.category).group_by(Items.category).all()
+        if request.form['name'].lower() == i[0].name.lower() and \
+                request.form['category'].lower() == i[0].category.lower():
+            ItemsCatalog = session.query(Catagory).all()
             return render_template('edit.html',
                                    ItemsCatalog=ItemsCatalog,
                                    categoryPath=categoryPath,
                                    itemPath=itemPath,
                                    message="ERROR: repeat item")
 
-    itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
-    if itemQuery != []:
+    itemQuery = session.query(Items).filter_by(id=queriedItem[0][0].id).one()
+    if itemQuery != [] and itemQuery.user_id == login_session['username']:
+        catagorytemp = session.query(Catagory).filter(
+            Catagory.name == request.form['category']).one()
         itemQuery.name = request.form['name']
-        itemQuery.category = request.form['category']
+        itemQuery.catagory = catagorytemp
         itemQuery.description = request.form['description']
         session.add(itemQuery)
         session.commit()
-    return render_template('redirect_response.html', title="Item edit",
-                           response='The item has been edited to \
+        return render_template('redirect_response.html', title="Item edit",
+                               response='The item has been edited to \
                             the database.')
+    else:
+        return render_template('redirect_response.html', title="ERROR",
+                               response='trying to edit Item that is not \
+                               yours.')
 
 # sends delete html file to make sure the user wishes to delete the specified
 # item
@@ -184,20 +183,14 @@ def editDB(categoryPath, itemPath):
 def delete(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
-    ItemOBJ = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
-    if 0 == ItemOBJ.count():  # checking if it extists
+
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
+
+    if 0 == queriedItem.count():  # checking if it extists
         abort(404)
-    # dont wont do delete a catagory
-    tempCatagory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(categoryPath))
-    print(len(list(tempCatagory)))
-    if len(list(tempCatagory)) < 2:
-        return render_template('redirect_response.html',
-                               title="ERROR:Item can not be deleted",
-                               response='you are trying to delete a catagory \
-                                database.')
     return render_template('delete.html',
                            categoryPath=categoryPath,
                            itemPath=itemPath)
@@ -209,27 +202,24 @@ def delete(categoryPath, itemPath):
 def deleteItemDB(categoryPath, itemPath):
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
-    queriedItem = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
     if 0 == queriedItem.count():  # checking if it extists
         abort(404)
-    # dont wont do delete a catagory
-    tempCatagory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(categoryPath))
 
-    if len(list(tempCatagory)) < 2:
-        return render_template('redirect_response.html',
-                               title="ERROR:Item can not be deleted",
-                               response='you are trying to delete a catagory \
-                                database.')
-    itemQuery = session.query(Items).filter_by(id=queriedItem[0].id).one()
-    if itemQuery != []:
+    itemQuery = session.query(Items).filter_by(id=queriedItem[0][0].id).one()
+    if itemQuery != [] and itemQuery.user_id == login_session['username']:
         session.delete(itemQuery)
         session.commit()
-    return render_template('redirect_response.html', title="Item deleted",
-                           response='The item has been deleted to the \
+        return render_template('redirect_response.html', title="Item deleted",
+                               response='The item has been deleted to the \
                             database.')
+    else:
+        return render_template('redirect_response.html', title="ERROR",
+                               response='trying to delete Item that is not \
+                               yours.')
 
 # sends html file to ask what you would like to add
 
@@ -238,7 +228,7 @@ def deleteItemDB(categoryPath, itemPath):
 def add():
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
-    ItemsCatalog = session.query(Items.category).group_by(Items.category).all()
+    ItemsCatalog = session.query(Catagory).all()
     return render_template('add.html', ItemsCatalog=ItemsCatalog, message="")
 # commits what you want to add
 
@@ -247,10 +237,8 @@ def add():
 def addToDB():
     if login_session.get('access_token') is None:  # is the user logged in
         abort(404)
-
     if len(list(request.form)) != 3:  # is their 3 items passed
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('add.html',
                                ItemsCatalog=ItemsCatalog,
                                message="ERROR: All info was not filled out")
@@ -259,47 +247,44 @@ def addToDB():
     if not list(request.form)[0] == 'category' or \
             not list(request.form)[1] == 'name' or \
             not list(request.form)[2] == 'description':
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('add.html',
                                ItemsCatalog=ItemsCatalog,
                                message="ERROR: Forum is not correct")
-
     # is the info the right length
     # this is mostly to sanitize input
     # prevent rouge post request
     if not (len(request.form['category']) > 0 and
-            len(request.form['category']) <= 250) or \
+            len(request.form['category']) <= 80) or \
             not (len(request.form['name']) > 0 and
                  len(request.form['name']) <= 80) or \
             not (len(request.form['description']) > 0 and
                  len(request.form['description']) <= 250):
-        ItemsCatalog = session.query(
-            Items.category).group_by(Items.category).all()
+        ItemsCatalog = session.query(Catagory).all()
         return render_template('add.html',
                                ItemsCatalog=ItemsCatalog,
                                message="ERROR: not the right length")
 
-    itemsInCategory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(request.form['category']))
+    itemsInCategory = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(request.form['category']))
     for i in itemsInCategory:
-        if request.form['name'] == i.name and \
-                request.form['category'] == i.category:
-            ItemsCatalog = session.query(
-                Items.category).group_by(Items.category).all()
+        if request.form['name'].lower() == i[0].name.lower() and \
+                request.form['category'].lower() == i[0].catagory.name.lower():
+            ItemsCatalog = session.query(Catagory).all()
             return render_template('add.html',
                                    ItemsCatalog=ItemsCatalog,
                                    message="ERROR: repeat item")
-
+    catagorytemp = session.query(Catagory).filter(
+        Catagory.name == request.form['category']).one()
     newItem = Items(name=request.form['name'],
-                    category=request.form['category'],
-                    description=request.form['description'])
+                    catagory=catagorytemp,
+                    description=request.form['description'],
+                    user_id=login_session['username'])
     session.add(newItem)
     session.commit()
     return render_template('redirect_response.html', title="Item added",
                            response='The item has been added to the database.')
-
-# sends login html file
 
 
 @app.route("/login")
@@ -412,12 +397,14 @@ def apiCatalog():
             "name": "",
             "id": 0,
             "category": "",
-            "description": ""
+            "description": "",
+            "user_id": ""
         }
         itemDicionaryTemp["name"] = i.name
         itemDicionaryTemp["id"] = i.id
-        itemDicionaryTemp["category"] = i.category
+        itemDicionaryTemp["category"] = i.catagory.name
         itemDicionaryTemp["description"] = i.description
+        itemDicionaryTemp["user_id"] = i.user_id
         itemList.append(itemDicionaryTemp)
     return jsonify(itemList)
 # prints all data in specified catagory to a json file
@@ -425,8 +412,9 @@ def apiCatalog():
 
 @app.route('/api/v1/query/<path:categoryPath>.json')
 def apiCategory(categoryPath):
-    itemsInCategory = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(categoryPath))
+    itemsInCategory = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath))
     if 0 == itemsInCategory.count():
         abort(404)
     itemList = []
@@ -436,12 +424,14 @@ def apiCategory(categoryPath):
             "name": "",
             "id": 0,
             "category": "",
-            "description": ""
+            "description": "",
+            "user_id": ""
         }
-        itemDicionaryTemp["name"] = i.name
-        itemDicionaryTemp["id"] = i.id
-        itemDicionaryTemp["category"] = i.category
-        itemDicionaryTemp["description"] = i.description
+        itemDicionaryTemp["name"] = i[0].name
+        itemDicionaryTemp["id"] = i[0].id
+        itemDicionaryTemp["category"] = i[0].catagory.name
+        itemDicionaryTemp["description"] = i[0].description
+        itemDicionaryTemp["user_id"] = i[0].user_id
         itemList.append(itemDicionaryTemp)
     return jsonify(itemList)
 
@@ -450,22 +440,26 @@ def apiCategory(categoryPath):
 
 @app.route('/api/v1/query/<path:categoryPath>/<path:itemPath>.json')  # all
 def apiItem(categoryPath, itemPath):
-    queriedItem = session.query(Items).filter(
-        func.lower(Items.category) == func.lower(
-            categoryPath), func.lower(Items.name) == func.lower(itemPath))
+    queriedItem = session.query(Items, Catagory).filter(
+        Catagory.id == Items.catagory_id).filter(
+        func.lower(Catagory.name) == func.lower(categoryPath),
+        func.lower(Items.name) == func.lower(itemPath))
     if 0 == queriedItem.count():
         abort(404)
-    itemDicionary = {
+    itemDicionaryTemp = {
         "name": "",
         "id": 0,
         "category": "",
-        "description": ""
-    }
-    itemDicionary["name"] = queriedItem[0].name
-    itemDicionary["id"] = queriedItem[0].id
-    itemDicionary["category"] = queriedItem[0].category
-    itemDicionary["description"] = queriedItem[0].description
-    return jsonify(itemDicionary)
+        "description": "",
+        "user_id": ""
+        }
+    itemDicionaryTemp["name"] = queriedItem[0][0].name
+    itemDicionaryTemp["id"] = queriedItem[0][0].id
+    itemDicionaryTemp["category"] = queriedItem[0][0].catagory.name
+    itemDicionaryTemp["description"] = queriedItem[0][0].description
+    itemDicionaryTemp["user_id"] = queriedItem[0][0].user_id
+
+    return jsonify(itemDicionaryTemp)
 
 
 if __name__ == "__main__":
