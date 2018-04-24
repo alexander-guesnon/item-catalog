@@ -40,7 +40,6 @@ In a web browser type the following to get a JSON file that will contain the spe
 ```
 http://localhost:8080/api/v1/query/(Catagory)/(Item).json
 ```
->>>>>>> parent of 150040d... Update README.md
 
 ## License
 Udacity-Item-Catalog is distributed under the GPLv3 license.
