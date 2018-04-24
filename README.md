@@ -1,5 +1,5 @@
 # Log-Analysis
-This is a python program I created to parse website logs. This program was running on an Ubuntu VM.
+This is a Python program I created to parse website logs. It's using the Flask and SQLalchemy libraries and this program was running on an Ubuntu VM.
 ## Outline
  * Create a python program to display the following information.
   * Show the top 3 articles in the database
@@ -13,7 +13,7 @@ This is a python program I created to parse website logs. This program was runni
 * PostgreSQL 9.5 - newer
 
 ### Running
-First, download the newsdata.sql file from udacity and put it into the udacity-log-analysis directory.
+First, download the newsdata.sql file and put it into the log-analysis directory.
 
 [newsdata.sql](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip)
 
