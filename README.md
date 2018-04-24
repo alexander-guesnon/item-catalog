@@ -5,10 +5,11 @@ This is a pet project of mine
 
 ## Outline
 * The application needs be able to do the following to a database:
- * Read
- * Create
- * Update
- * Delete
+  * Read
+  * Create
+  * Update
+  * Delete
+  
 * The application needs to be able to login to an account using OAuth.
 * The application needs to have JSON API endpoint.
 
