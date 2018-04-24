@@ -42,4 +42,4 @@ http://localhost:8080/api/v1/query/(Catagory)/(Item).json
 ```
 
 ## License
-Udacity-Item-Catalog is distributed under the GPLv3 license.
+Item-Catalog is distributed under the GPLv3 license.
