@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-# Log-Analysis
-This is a Python program I created to parse website logs. It's using the Flask and SQLalchemy libraries and this program was running on an Ubuntu VM.
-=======
-# Udacity-Item-Catalog
+# Item-Catalog
 
-This is a project I did for the Udacity backend module
+This is a pet project of mine 
 
->>>>>>> parent of 150040d... Update README.md
+
 ## Outline
 * The application needs be able to do the following to a database:
  * Read
@@ -22,26 +18,7 @@ This is a project I did for the Udacity backend module
 * Python 2.7 - newer
 
 ### Running
-<<<<<<< HEAD
-First, download the newsdata.sql file and put it into the log-analysis directory.
 
-[newsdata.sql](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip)
-
-Run the following command when first installed.
-~~~
-sql -d news -f newsdata.sql
-~~~
-After the database is loaded you can run the following.
-~~~
-python DB-analysis-tool.py
-~~~
-If you want to reset the database run the following commands.
-~~~
-echo 'drop table log; drop table articles; drop table authors;' | psql news
-sql -d news -f newsdata.sql
-~~~
-
-=======
 Launch a terminal in the Udacity-Item-Catalog directory. Then run the following.
 ```
 python catalog-app.py
