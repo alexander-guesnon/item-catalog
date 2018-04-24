@@ -1,6 +1,6 @@
 # Item-Catalog
 
-This is a pet project of mine 
+This is a project I made to deal with an AWS web application product database. The server will send out Flask HTML templets,  which are styled with CSS and Bootstrap, which allow users to submit POST requests to the servers via an HTML form. The server will take the user's data and manipulate the PSQL database as needed, using SQLachemy and Python. The SQL database is also accessible through the API and will return the data in a JSON format.
 
 
 ## Outline
